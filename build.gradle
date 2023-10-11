@@ -60,7 +60,7 @@ allprojects {
     dependencies {
         api platform("io.projectreactor:reactor-bom:$reactor_bom_version")
         api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_datatype_jsr310_version"
-        api "com.discord4j:discord-json:$discordJsonVersion"
+        api "com.github.rfresh2:discord-json:cafa326f8e"
     }
 
     repositories {
@@ -71,6 +71,9 @@ allprojects {
             maven { url 'https://oss.sonatype.org/content/repositories/staging' }
         }
         maven { url 'https://m2.dv8tion.net/releases' }
+        maven {
+            url = "https://jitpack.io"
+        }
     }
 
     configurations.all {
