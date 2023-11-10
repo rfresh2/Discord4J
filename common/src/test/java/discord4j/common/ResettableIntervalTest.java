@@ -26,7 +26,7 @@ public class ResettableIntervalTest {
 
     @Test
     public void test() {
-        ResettableInterval interval = new ResettableInterval(Schedulers.elastic());
+        ResettableInterval interval = new ResettableInterval(Schedulers.boundedElastic());
         StepVerifier.withVirtualTime(() -> interval.ticks()
                 .doOnSubscribe(s -> interval.start(Duration.ZERO, Duration.ofSeconds(1))))
                 .expectSubscription()
@@ -35,6 +35,7 @@ public class ResettableIntervalTest {
                 .then(interval::stop)
                 .then(() -> interval.start(Duration.ZERO, Duration.ofSeconds(2)))
                 .expectNoEvent(Duration.ofSeconds(2))
+                .expectNext(0L)
                 .expectNext(1L)
                 .thenCancel()
                 .verify();

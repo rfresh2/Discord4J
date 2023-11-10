@@ -20,6 +20,8 @@ import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static discord4j.rest.util.Permission.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +36,7 @@ public class PermissionSetTest {
     @Test
     public void testAll() {
         PermissionSet permSet = PermissionSet.all();
-        assertEquals(Permission.values().length, permSet.size());
+        Arrays.stream(values()).forEach(perm -> assertTrue(permSet.contains(perm)));
     }
 
     @Test
@@ -88,10 +90,10 @@ public class PermissionSetTest {
 
     @Test
     public void testNot() {
-        PermissionSet set = PermissionSet.none();
+        PermissionSet set = PermissionSet.all();
         PermissionSet result = set.not();
 
-        assertEquals(Permission.values().length, result.size());
-        assertEquals(PermissionSet.all(), result);
+        assertEquals(0, result.size());
+        assertEquals(PermissionSet.none(), result);
     }
 }

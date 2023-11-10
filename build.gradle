@@ -15,7 +15,7 @@ ext {
     project_version = "$version".toString()
     project_description = 'Java interface for the Discord API'
     project_url = 'https://discord4j.com'
-    project_jdk = '1.8'
+    project_jdk = '17'
     jdk = JavaVersion.current().majorVersion
     jdk_javadoc = "https://docs.oracle.com/javase/$jdk/docs/api/".toString()
     if (JavaVersion.current().isJava11Compatible()) {
@@ -23,13 +23,13 @@ ext {
     }
 
     // Dependencies
-    reactor_bom_version = '2020.0.33'
-    jackson_databind_version = '2.12.7.1'
-    jackson_datatype_jsr310_version = '2.14.2'
-    jackson_datatype_jdk8_version = '2.12.7'
-    caffeine_version = '2.8.8'
+    reactor_bom_version = '2022.0.12'
+    jackson_databind_version = '2.15.3'
+    jackson_datatype_jsr310_version = '2.15.3'
+    jackson_datatype_jdk8_version = '2.15.3'
+    caffeine_version = '3.1.8'
     immutables_group = 'org.immutables'
-    immutables_version = '2.9.0'
+    immutables_version = '2.10.0'
 
     // Test dependencies
     junit_version = '5.7.1'
@@ -120,6 +120,10 @@ allprojects {
         withJavadocJar()
         withSourcesJar()
     }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
 subprojects {
@@ -176,37 +180,6 @@ subprojects {
                     }
                 }
             }
-        }
-
-        if (!isJitpack) {
-            repositories {
-                maven {
-                    if (isRelease) {
-                        url 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-                    } else {
-                        url 'https://oss.sonatype.org/content/repositories/snapshots/'
-                    }
-                    def sonatypeUsername = findProperty('sonatypeUsername')
-                    def sonatypePassword = findProperty('sonatypePassword')
-                    if (sonatypeUsername != null && sonatypePassword != null) {
-                        credentials {
-                            username sonatypeUsername
-                            password sonatypePassword
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (!isJitpack && isRelease) {
-        signing {
-            def signingKey = findProperty("signingKey")
-            def signingPassword = findProperty("signingPassword")
-            if (signingKey != null && signingPassword != null) {
-                useInMemoryPgpKeys(new String(signingKey.decodeBase64()), signingPassword as String)
-            }
-            sign publishing.publications.mavenJava
         }
     }
 }
