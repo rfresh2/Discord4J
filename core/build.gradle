@@ -10,6 +10,7 @@ dependencies {
     annotationProcessor "$immutables_group:value:$immutables_version"
 
     compileOnly "com.discord4j:discord-json-encoding:$discordJsonVersion"
+    compileOnly "org.reflections:reflections:0.10.2"
 
     if (JavaVersion.current().isJava8()) {
         compileOnly "com.google.code.findbugs:annotations:3.0.1u2"
@@ -39,6 +40,7 @@ javadoc {
 }
 
 jar {
+    dependsOn('generateConfiguration')
     manifest {
         attributes 'Implementation-Title': archivesBaseName,
                 'Implementation-Version': archiveVersion,
@@ -49,4 +51,13 @@ jar {
 sourcesJar {
     dependsOn compileJava
     from "build/generated/sources/annotationProcessor/java/main"
+}
+
+task generateConfiguration(type: JavaExec) {
+    dependsOn compileJava
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
+    getMainClass().set('discord4j.core.util.GraalVMConfigurationGenerator')
+    var outputFile = "$buildDir/resources/main/META-INF/native-image/discord4j/reflect-config.json";
+    setArgs([outputFile]);
+    outputs.upToDateWhen { false }
 }
