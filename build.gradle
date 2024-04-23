@@ -60,7 +60,7 @@ allprojects {
     dependencies {
         api platform("io.projectreactor:reactor-bom:$reactor_bom_version")
         api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_datatype_jsr310_version"
-        api "com.github.rfresh2:discord-json:d32f75613a"
+        api "com.github.rfresh2:discord-json:360f2ccd0a"
     }
 
     repositories {
