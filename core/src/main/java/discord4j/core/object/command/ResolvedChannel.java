@@ -126,7 +126,7 @@ public class ResolvedChannel implements DiscordObject {
      * @return The parent ID as a {@link Snowflake}, if present.
      */
     public Optional<Snowflake> getParentId() {
-        return data.parentId().toOptional().map(Snowflake::of);
+        return Possible.flatOpt(data.parentId()).map(Snowflake::of);
     }
 
     /**
