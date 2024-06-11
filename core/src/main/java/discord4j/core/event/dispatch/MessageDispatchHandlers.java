@@ -105,7 +105,10 @@ class MessageDispatchHandlers {
         long userId = Snowflake.asLong(context.getDispatch().userId());
         long channelId = Snowflake.asLong(context.getDispatch().channelId());
         long messageId = Snowflake.asLong(context.getDispatch().messageId());
-        long messageAuthorId = Snowflake.asLong(context.getDispatch().messageAuthorId());
+        Long messageAuthorId = context.getDispatch().messageAuthorId()
+            .toOptional()
+            .map(Snowflake::asLong)
+            .orElse(null);
         Long guildId = context.getDispatch().guildId()
                 .toOptional()
                 .map(Snowflake::asLong)

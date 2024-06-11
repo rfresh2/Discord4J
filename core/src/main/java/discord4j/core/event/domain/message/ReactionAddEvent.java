@@ -49,10 +49,11 @@ public class ReactionAddEvent extends MessageEvent {
     private final ReactionEmoji emoji;
     @Nullable
     private final Member member;
-    private final long messageAuthorId;
+    @Nullable
+    private final Long messageAuthorId;
 
     public ReactionAddEvent(GatewayDiscordClient gateway, ShardInfo shardInfo, long userId, long channelId, long messageId, @Nullable Long guildId,
-                            ReactionEmoji emoji, @Nullable Member member, long messageAuthorId) {
+                            ReactionEmoji emoji, @Nullable Member member, Long messageAuthorId) {
         super(gateway, shardInfo);
         this.userId = userId;
         this.channelId = channelId;
@@ -166,8 +167,8 @@ public class ReactionAddEvent extends MessageEvent {
      *
      * @return The ID of the {@link User} who sent the {@link Message} that was reacted to.
      */
-    public Snowflake getMessageAuthorId() {
-        return Snowflake.of(messageAuthorId);
+    public Optional<Snowflake> getMessageAuthorId() {
+        return Optional.ofNullable(messageAuthorId).map(Snowflake::of);
     }
 
     @Override
