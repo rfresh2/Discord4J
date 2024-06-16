@@ -42,14 +42,14 @@ javadoc {
 jar {
     dependsOn('generateConfiguration')
     manifest {
-        attributes 'Implementation-Title': archivesBaseName,
+        attributes 'Implementation-Title': base.archivesName.get(),
                 'Implementation-Version': archiveVersion,
                 'Automatic-Module-Name': 'discord4j.core'
     }
 }
 
 sourcesJar {
-    dependsOn compileJava
+    dependsOn project(':core').compileJava
     from "build/generated/sources/annotationProcessor/java/main"
 }
 
