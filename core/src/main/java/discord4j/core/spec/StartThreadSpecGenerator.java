@@ -19,7 +19,7 @@ package discord4j.core.spec;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.ThreadChannel;
-import discord4j.discordjson.json.StartThreadRequest;
+import discord4j.discordjson.json.StartThreadFromMessageRequest;
 import discord4j.discordjson.possible.Possible;
 import org.immutables.value.Value;
 import reactor.core.CoreSubscriber;
@@ -41,7 +41,7 @@ import static discord4j.core.spec.InternalSpecUtils.mapPossible;
  * @see <a href="https://discord.com/developers/docs/resources/channel#start-thread-from-message">Documentation</a>
  */
 @Value.Immutable
-public interface StartThreadSpecGenerator extends AuditSpec<StartThreadRequest> {
+public interface StartThreadSpecGenerator extends AuditSpec<StartThreadFromMessageRequest> {
 
     String name();
 
@@ -50,8 +50,8 @@ public interface StartThreadSpecGenerator extends AuditSpec<StartThreadRequest> 
     Possible<Integer> rateLimitPerUser();
 
     @Override
-    default StartThreadRequest asRequest() {
-        return StartThreadRequest.builder()
+    default StartThreadFromMessageRequest asRequest() {
+        return StartThreadFromMessageRequest.builder()
                 .name(name())
                 .autoArchiveDuration(mapPossible(autoArchiveDuration(), ThreadChannel.AutoArchiveDuration::getValue))
                 .rateLimitPerUser(rateLimitPerUser())
