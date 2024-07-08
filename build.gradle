@@ -24,15 +24,15 @@ ext {
 
     // Dependencies
     reactor_bom_version = '2023.0.7'
-    jackson_databind_version = '2.17.1'
-    jackson_datatype_jsr310_version = '2.17.1'
-    jackson_datatype_jdk8_version = '2.17.1'
+    jackson_databind_version = '2.17.2'
+    jackson_datatype_jsr310_version = '2.17.2'
+    jackson_datatype_jdk8_version = '2.17.2'
     caffeine_version = '3.1.8'
     immutables_group = 'org.immutables'
     immutables_version = '2.10.1'
 
     // Test dependencies
-    junit_version = '5.10.2'
+    junit_version = '5.10.3'
     mockito_version = '5.12.0'
     logback_version = '1.5.6'
     reflections_version = '0.10.2'
