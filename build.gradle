@@ -11,7 +11,7 @@ ext {
     // Project constants
     github_org = 'Discord4J'
     project_name = 'Discord4J'
-    artifact_group = 'com.discord4j'
+    artifact_group = 'com.github.rfresh2.discord4j'
     project_version = "$version".toString()
     project_description = 'Java interface for the Discord API'
     project_url = 'https://discord4j.com'
@@ -143,11 +143,26 @@ subprojects {
     }
 
     publishing {
+        repositories {
+            maven {
+                name = "vc"
+                url = "https://maven.2b2t.vc/releases"
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+            }
+        }
         publications {
             mavenJava(MavenPublication) {
                 from components.java
                 afterEvaluate {
                     artifactId = jar.archiveBaseName.get()
+                }
+                version = project.version.toString()
+                var envVer = System.getenv("PUBLISH_VERSION")
+                if (envVer != null) {
+                    version = envVer
                 }
 
                 versionMapping {
