@@ -32,5 +32,5 @@ jobs:
               env:
                   MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
                   MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-                  PUBLISH_VERSION: "3.4.2.${{ github.run_number }}"
+                  PUBLISH_VERSION: "3.4.3.${{ github.run_number }}"
               run: ./gradlew build publishMavenPublicationToVcRepository
