@@ -239,7 +239,18 @@ public class RestChannel {
      * error is received, it is emitted through the {@code Mono}.
      */
     public Mono<MessageData> createMessage(EmbedData embed) {
-        return createMessage(MessageCreateRequest.builder().embed(embed).build());
+        return createMessage(MessageCreateRequest.builder().embeds(embed).build());
+    }
+
+    /**
+     * Wrapper for {@link RestChannel#createMessage(MessageCreateRequest)} taking a list of embeds only.
+     *
+     * @param embeds The embeds of the message (max 10)
+     * @return a {@link Mono} where, upon successful completion, emits the created {@link MessageData}. If an
+     * error is received, it is emitted through the {@code Mono}.
+     */
+    public Mono<MessageData> createMessage(EmbedData... embeds) {
+        return createMessage(MessageCreateRequest.builder().embeds(embeds).build());
     }
 
     /*
