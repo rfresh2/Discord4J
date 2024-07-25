@@ -33,6 +33,11 @@ import discord4j.core.event.domain.integration.IntegrationUpdateEvent;
 import discord4j.core.event.domain.interaction.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
+import discord4j.core.event.domain.monetization.EntitlementCreateEvent;
+import discord4j.core.event.domain.monetization.EntitlementDeleteEvent;
+import discord4j.core.event.domain.monetization.EntitlementUpdateEvent;
+import discord4j.core.event.domain.poll.PollVoteAddEvent;
+import discord4j.core.event.domain.poll.PollVoteRemoveEvent;
 import discord4j.core.event.domain.role.RoleCreateEvent;
 import discord4j.core.event.domain.role.RoleDeleteEvent;
 import discord4j.core.event.domain.role.RoleUpdateEvent;
@@ -1109,6 +1114,61 @@ public abstract class ReactiveEventAdapter {
         return Mono.empty();
     }
 
+    /**
+     * Invoked when a user votes in a poll.
+     *
+     * @param event the event instance
+     * @return a {@link Publisher} that completes when this listener has done processing the event, for example,
+     * returning any {@link Mono}, {@link Flux} or synchronous code using {@link Mono#fromRunnable(Runnable)}.
+     */
+    public Publisher<?> onPollVoteAdd(PollVoteAddEvent event) {
+        return Mono.empty();
+    }
+
+    /**
+     * Invoked when a user removes their vote in a poll.
+     *
+     * @param event the event instance
+     * @return a {@link Publisher} that completes when this listener has done processing the event, for example,
+     * returning any {@link Mono}, {@link Flux} or synchronous code using {@link Mono#fromRunnable(Runnable)}.
+     */
+    public Publisher<?> onPollVoteRemove(PollVoteRemoveEvent event) {
+        return Mono.empty();
+    }
+
+    /**
+     * Invoked when an entitlement is created.
+     *
+     * @param event the event instance
+     * @return a {@link Publisher} that completes when this listener has done processing the event, for example,
+     * returning any {@link Mono}, {@link Flux} or synchronous code using {@link Mono#fromRunnable(Runnable)}.
+     */
+    public Publisher<?> onEntitlementCreate(EntitlementCreateEvent event) {
+        return Mono.empty();
+    }
+
+    /**
+     * Invoked when an entitlement is updated.
+     *
+     * @param event the event instance
+     * @return a {@link Publisher} that completes when this listener has done processing the event, for example,
+     * returning any {@link Mono}, {@link Flux} or synchronous code using {@link Mono#fromRunnable(Runnable)}.
+     */
+    public Publisher<?> onEntitlementUpdate(EntitlementUpdateEvent event) {
+        return Mono.empty();
+    }
+
+    /**
+     * Invoked when an entitlement is deleted.
+     *
+     * @param event the event instance
+     * @return a {@link Publisher} that completes when this listener has done processing the event, for example,
+     * returning any {@link Mono}, {@link Flux} or synchronous code using {@link Mono#fromRunnable(Runnable)}.
+     */
+    public Publisher<?> onEntitlementDelete(EntitlementDeleteEvent event) {
+        return Mono.empty();
+    }
+
     // ================= Core methods ================= //
 
     /**
@@ -1216,6 +1276,11 @@ public abstract class ReactiveEventAdapter {
         if (event instanceof ScheduledEventDeleteEvent) compatibleHooks.add(onScheduledEventDelete((ScheduledEventDeleteEvent) event));
         if (event instanceof ScheduledEventUserAddEvent) compatibleHooks.add(onScheduledEventUserAdd((ScheduledEventUserAddEvent) event));
         if (event instanceof ScheduledEventUserRemoveEvent) compatibleHooks.add(onScheduledEventUserRemove((ScheduledEventUserRemoveEvent) event));
+        if (event instanceof PollVoteAddEvent) compatibleHooks.add(onPollVoteAdd((PollVoteAddEvent) event));
+        if (event instanceof PollVoteRemoveEvent) compatibleHooks.add(onPollVoteRemove((PollVoteRemoveEvent) event));
+        if (event instanceof EntitlementCreateEvent) compatibleHooks.add(onEntitlementCreate((EntitlementCreateEvent) event));
+        if (event instanceof EntitlementUpdateEvent) compatibleHooks.add(onEntitlementUpdate((EntitlementUpdateEvent) event));
+        if (event instanceof EntitlementDeleteEvent) compatibleHooks.add(onEntitlementDelete((EntitlementDeleteEvent) event));
         // @formatter:on
         return Mono.whenDelayError(compatibleHooks);
     }

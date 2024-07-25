@@ -20,6 +20,7 @@ package discord4j.rest.entity;
 import discord4j.common.util.Snowflake;
 import discord4j.discordjson.json.*;
 import discord4j.rest.RestClient;
+import discord4j.rest.route.Routes;
 import discord4j.rest.util.PaginationUtil;
 import discord4j.rest.util.Permission;
 import reactor.core.publisher.Flux;
@@ -177,9 +178,9 @@ public class RestGuild {
         return restClient.getGuildService().createGuildChannel(id, request, reason);
     }
 
-    public Flux<RoleData> modifyChannelPositions(List<PositionModifyRequest> requests) {
+    public Flux<Void> modifyChannelPositions(List<ChannelPositionModifyRequest> requests) {
         return restClient.getGuildService()
-                .modifyGuildChannelPositions(id, requests.toArray(new PositionModifyRequest[0]));
+            .modifyGuildChannelPositions(id, requests.toArray(new ChannelPositionModifyRequest[0]));
     }
 
     public Mono<MemberData> getMember(Snowflake userId) {
@@ -246,6 +247,10 @@ public class RestGuild {
         return restClient.getGuildService().removeGuildBan(id, userId.asLong(), reason);
     }
 
+    public Mono<BulkBanResponseData> bulkGuildBan(BulkBanRequest request, @Nullable String reason) {
+        return restClient.getGuildService().bulkGuildBan(id, request, reason);
+    }
+
     public Flux<RoleData> getRoles() {
         return restClient.getGuildService().getGuildRoles(id);
     }
@@ -254,9 +259,13 @@ public class RestGuild {
         return restClient.getGuildService().createGuildRole(id, request, reason);
     }
 
-    public Flux<RoleData> modifyRolePositions(List<PositionModifyRequest> requests) {
+    public Flux<RoleData> modifyRolePositions(List<RolePositionModifyRequest> requests, @Nullable String reason) {
         return restClient.getGuildService().modifyGuildRolePositions(id,
-                requests.toArray(new PositionModifyRequest[0]));
+            requests.toArray(new RolePositionModifyRequest[0]), reason);
+    }
+
+    public Flux<RoleData> modifyRolePositions(List<RolePositionModifyRequest> requests) {
+        return modifyRolePositions(requests, null);
     }
 
     public Mono<RoleData> modifyRole(Snowflake roleId, RoleModifyRequest request, @Nullable String reason) {
@@ -409,6 +418,29 @@ public class RestGuild {
      */
     public Mono<Void> deleteScheduledEvent(Snowflake eventId, @Nullable String reason) {
         return restClient.getGuildService().deleteScheduledEvent(id, eventId.asLong(), reason);
+    }
+
+    /**
+     * Request to retrieve the onboarding of the guild.
+     *
+     * @return A {@link Mono} where, upon successful completion, emits the {@link OnboardingData}. If an error is received,
+     * it is emitted through the {@code Mono}.
+     */
+    public Mono<OnboardingData> getOnboarding() {
+        return this.restClient.getGuildService().getOnboarding(this.id);
+    }
+
+    /**
+     * Request to modify the onboarding of the guild. Requires the {@link Permission#MANAGE_GUILD} and
+     * {@link Permission#MANAGE_ROLES} permissions.
+     *
+     * @param request the request body
+     * @param reason an optional reason for the audit log
+     * @return A {@link Mono} where, upon successful completion, emits the modified {@link OnboardingData}.
+     * If an error is received, it is emitted through the {@code Mono}.
+     */
+    public Mono<OnboardingData> modifyOnboarding(OnboardingEditData request, @Nullable String reason) {
+        return this.restClient.getGuildService().modifyOnboarding(this.id, request, reason);
     }
 
     @Override

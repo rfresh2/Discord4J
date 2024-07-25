@@ -41,7 +41,7 @@ import static discord4j.core.spec.InternalSpecUtils.mapPossible;
  * @see <a href="https://discord.com/developers/docs/resources/channel#start-thread-from-message">Documentation</a>
  */
 @Value.Immutable
-public interface StartThreadSpecGenerator extends AuditSpec<StartThreadFromMessageRequest> {
+public interface StartThreadFromMessageSpecGenerator extends AuditSpec<StartThreadFromMessageRequest> {
 
     String name();
 
@@ -61,13 +61,13 @@ public interface StartThreadSpecGenerator extends AuditSpec<StartThreadFromMessa
 
 @SuppressWarnings("immutables:subtype")
 @Value.Immutable(builder = false)
-abstract class StartThreadMonoGenerator extends Mono<ThreadChannel> implements StartThreadSpecGenerator {
+abstract class StartThreadFromMessageMonoGenerator extends Mono<ThreadChannel> implements StartThreadFromMessageSpecGenerator {
 
     abstract Message message();
 
     @Override
     public void subscribe(CoreSubscriber<? super ThreadChannel> actual) {
-        message().startThread(StartThreadSpec.copyOf(this)).subscribe(actual);
+        message().startThread(StartThreadFromMessageSpec.copyOf(this)).subscribe(actual);
     }
 
     @Override

@@ -27,15 +27,19 @@ import discord4j.core.object.component.MessageComponent;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.ThreadChannel;
+import discord4j.core.object.entity.poll.Poll;
 import discord4j.core.object.reaction.Reaction;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.retriever.EntityRetrievalStrategy;
 import discord4j.core.spec.MessageEditMono;
 import discord4j.core.spec.MessageEditSpec;
-import discord4j.core.spec.StartThreadSpec;
+import discord4j.core.spec.StartThreadFromMessageMono;
+import discord4j.core.spec.StartThreadFromMessageSpec;
 import discord4j.core.spec.legacy.LegacyMessageEditSpec;
 import discord4j.core.util.EntityUtil;
 import discord4j.discordjson.json.MessageData;
+import discord4j.discordjson.json.PollData;
+import discord4j.discordjson.json.StartThreadFromMessageRequest;
 import discord4j.discordjson.json.UserData;
 import discord4j.discordjson.possible.Possible;
 import discord4j.gateway.intent.Intent;
@@ -827,10 +831,32 @@ public final class Message implements Entity {
      * @return A {@link Mono} where, upon successful completion, emits the created {@link ThreadChannel}.
      * If an error is received, it is emitted through the {@code Mono}.
      */
-    public Mono<ThreadChannel> startThread(StartThreadSpec spec) {
+    public Mono<ThreadChannel> startThread(StartThreadFromMessageSpec spec) {
         return gateway.getRestClient().getChannelService()
                 .startThreadWithMessage(getChannelId().asLong(), getId().asLong(), spec.asRequest())
                 .map(data -> new ThreadChannel(gateway, data));
+    }
+
+    /**
+     * Get the poll in the current message.
+     *
+     * @return An {@link Optional} containing the {@link Poll} if present, otherwise {@link Optional#empty()}.
+     * @throws java.lang.UnsupportedOperationException if the {@link Intent#MESSAGE_CONTENT} intent is not enabled and
+     * the content cannot be accessed
+     */
+    public Optional<Poll> getPoll() {
+        Optional<PollData> pollData = this.data.poll().toOptional();
+
+        // If we already have the poll data, we can create the Poll object
+        if (pollData.isPresent()) {
+            return pollData.map(data -> new Poll(this.gateway, data, this.data.channelId().asLong(), this.data.id().asLong()));
+        }
+
+        // We need the MESSAGE_CONTENT intent to access the poll
+        this.checkIfMessageContentAccessIsAllowed();
+
+        // Well, we should have access to the content, but it's actually empty
+        return Optional.empty();
     }
 
     /**
@@ -874,6 +900,31 @@ public final class Message implements Entity {
         // This can happen in the following cases:
         // - The message is a notification message (ex. message pin), and thus don't have neither content nor embeds, etc.
         // - Discord broke their API :'(
+    }
+
+    /**
+     * Request to create a thread from the current message with the given specification.
+     *
+     * @param spec The specification for the thread.
+     * @return A {@link Mono} where, upon successful completion, emits the created {@link ThreadChannel}. If an error is
+     * received, it is emitted through the {@code Mono}.
+     */
+    public Mono<ThreadChannel> createPublicThread(StartThreadFromMessageRequest spec) {
+        return gateway.getRestClient().getChannelService()
+                .startThreadWithMessage(getChannelId().asLong(), getId().asLong(), spec)
+                .map(data -> new ThreadChannel(gateway, data));
+    }
+
+    /**
+     * Request to create a thread from the current message with the given name. The thread can be configured further
+     * by calling the "withXxx" methods on the returned {@link StartThreadFromMessageMono}.
+     *
+     * @param threadName The name of the thread.
+     * @return A {@link StartThreadFromMessageMono} where, upon successful completion, emits the created {@link ThreadChannel}. If
+     * an error is received, it is emitted through the {@link Mono}.
+     */
+    public StartThreadFromMessageMono createPublicThread(String threadName) {
+        return StartThreadFromMessageMono.of(threadName, this);
     }
 
     @Override
@@ -995,12 +1046,12 @@ public final class Message implements Entity {
         DEFAULT(0),
 
         /**
-         * A message created when a recipient was added to a DM.
+         * A message created when a recipient was added to a DM or a thread.
          */
         RECIPIENT_ADD(1, false),
 
         /**
-         * A message created when a recipient left a DM.
+         * A message created when a recipient left a DM or a thread.
          */
         RECIPIENT_REMOVE(2, false),
 
@@ -1010,7 +1061,7 @@ public final class Message implements Entity {
         CALL(3, false),
 
         /**
-         * A message created when a channel's name changed.
+         * A message created when a thread's name changed.
          */
         CHANNEL_NAME_CHANGE(4, false),
 

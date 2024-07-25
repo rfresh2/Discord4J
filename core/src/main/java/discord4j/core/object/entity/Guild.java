@@ -16,6 +16,7 @@
  */
 package discord4j.core.object.entity;
 
+import discord4j.common.annotations.Experimental;
 import discord4j.common.store.action.read.ReadActions;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
@@ -23,6 +24,7 @@ import discord4j.core.object.*;
 import discord4j.core.object.audit.AuditLogPart;
 import discord4j.core.object.automod.AutoModRule;
 import discord4j.core.object.entity.channel.*;
+import discord4j.core.object.onboarding.Onboarding;
 import discord4j.core.object.presence.Presence;
 import discord4j.core.retriever.EntityRetrievalStrategy;
 import discord4j.core.spec.*;
@@ -528,7 +530,7 @@ public final class Guild implements Entity {
      * @return A {@link Mono} where, upon successful completion, emits the {@link GuildEmoji} as represented by the
      * supplied ID. If an error is received, it is emitted through the {@code Mono}.
      */
-    public Mono<GuildEmoji> getGuildEmojiById(final Snowflake id) {
+    public Mono<GuildEmoji> getEmojiById(final Snowflake id) {
         return gateway.getGuildEmojiById(getId(), id);
     }
 
@@ -540,7 +542,7 @@ public final class Guild implements Entity {
      * @return A {@link Mono} where, upon successful completion, emits the {@link GuildEmoji} as represented by the
      * supplied ID. If an error is received, it is emitted through the {@code Mono}.
      */
-    public Mono<GuildEmoji> getGuildEmojiById(final Snowflake id, EntityRetrievalStrategy retrievalStrategy) {
+    public Mono<GuildEmoji> getEmojiById(final Snowflake id, EntityRetrievalStrategy retrievalStrategy) {
         return gateway.withRetrievalStrategy(retrievalStrategy).getGuildEmojiById(getId(), id);
     }
 
@@ -1141,7 +1143,7 @@ public final class Guild implements Entity {
      * Requests to create an emoji. Properties specifying how to create an emoji can be set via the {@code withXxx}
      * methods of the returned {@link GuildEmojiCreateMono}.
      *
-     * @param name  the name of the emoji to create
+     * @param name the name of the emoji to create
      * @param image the image of the emoji to create
      * @return A {@link GuildEmojiCreateMono} where, upon successful completion, emits the created {@link GuildEmoji}.
      * If an error is received, it is emitted through the {@code GuildEmojiCreateMono}.
@@ -1670,6 +1672,38 @@ public final class Guild implements Entity {
     }
 
     /**
+     * Requests to ban the specified users. Properties specifying how to ban the user can be set via the {@code withXxx}
+     * methods of the returned {@link BulkBanRequestMono}.
+     *
+     * @param userIds The list of IDs of the users to ban.
+     * @return A {@link BulkBanRequestMono} where, upon successful completion, emits an {@link BulkBan} with the results.
+     *      * If an error is received, it is emitted through the {@code Mono}.
+     */
+    public BulkBanRequestMono bulkBan(List<Snowflake> userIds) {
+        return BulkBanRequestMono.of(this).withUserIds(userIds);
+    }
+
+    /**
+     * Request a Bulk Ban to a specific list of users.
+     * <br>
+     * <b>Things considered error for this request</b>
+     * <ul>
+     *   <li>The list of users is over 200</li>
+     *   <li>None of the list of users can be banned</li>
+     * </ul>
+     *
+     * @param spec an immutable object that specifies how to bulk ban in the guild
+     * @return A {@link Mono} where, upon successful completion, emits an {@link BulkBan} with the results.
+     * If an error is received, it is emitted through the {@code Mono}.
+     */
+    public Mono<BulkBan> bulkBan(BulkBanRequestSpec spec) {
+        Objects.requireNonNull(spec);
+        return gateway.getRestClient().getGuildService()
+            .bulkGuildBan(getId().asLong(), spec.asRequest(), spec.reason())
+            .map(data -> new BulkBan(gateway, data));
+    }
+
+    /**
      * Requests to retrieve the number of users that will be pruned. Users are pruned if they have not been seen within
      * the past specified amount of days, with roles optionally included in the prune count if specified through {@link
      * LegacyGuildPruneCountSpec#addRole(Snowflake)} or {@link LegacyGuildPruneCountSpec#addRoles(Collection)}.
@@ -2031,6 +2065,67 @@ public final class Guild implements Entity {
     public Mono<ScheduledEvent> createScheduledEvent(ScheduledEventCreateSpec spec) {
         return gateway.getRestClient().getGuildService().createScheduledEvent(getId().asLong(), spec.asRequest())
             .map(data -> new ScheduledEvent(gateway, data));
+    }
+
+    /**
+     * Request the guild's entitlements associated with the current application.
+     * The request can be filtered using the "withXXX" methods of the returned {@link EntitlementListRequestFlux}.
+     *
+     * @return A {@link EntitlementListRequestFlux} which emits {@link discord4j.core.object.monetization.Entitlement} objects.
+     * If an error is received, it is emitted through the {@link Flux}.
+     */
+    @Experimental // This method could not be tested due to the lack of a Discord verified application
+    public EntitlementListRequestFlux getEntitlements() {
+        return gateway.getEntitlements().withGuildId(getId());
+    }
+
+    /**
+     * Request to create a test entitlement for the guild with the provided SKU ID.
+     *
+     * @return A {@link CreateTestEntitlementMono} which emits the created {@link discord4j.core.object.monetization.Entitlement}.
+     * If an error is received, it is emitted through the {@link Mono}.
+     */
+    @Experimental // This method could not be tested due to the lack of a Discord verified application
+    public CreateTestEntitlementMono createTestEntitlement(Snowflake skuId) {
+        return gateway.createTestEntitlementForGuild(skuId, getId());
+    }
+
+    /**
+     * Get the onboarding of the guild.
+     *
+     * @return A {@link Mono} which, upon completion, emits the {@link Onboarding} object. Any error, if occurs,
+     * is emitted through the {@link Mono}.
+     */
+    public Mono<Onboarding> getOnboarding() {
+        return this.gateway.getRestClient()
+            .getGuildService()
+            .getOnboarding(this.getId().asLong())
+            .map(data -> new Onboarding(this.gateway, data));
+    }
+
+    /**
+     * Request to edit the onboarding of the guild with the provided spec.
+     *
+     * @param spec spec specifying how to edit the onboarding
+     * @return A {@link Mono} which, upon completion, emits the edited {@link Onboarding} object. Any error, if occurs,
+     * is emitted through the {@link Mono}.
+     */
+    public Mono<Onboarding> modifyOnboarding(OnboardingEditSpec spec) {
+        return this.gateway.getRestClient()
+            .getGuildService()
+            .modifyOnboarding(this.getId().asLong(), spec.asRequest(), spec.reason())
+            .map(data -> new Onboarding(this.gateway, data));
+    }
+
+    /**
+     * Requests to edit the onboarding of the guild. Properties specifying how to edit the onboarding can be set via the
+     * {@code withXxx} methods of the returned {@link OnboardingEditMono}.
+     *
+     * @return A {@link Mono} which, upon completion, emits nothing. Any error, if occurs,
+     * is emitted through the {@link Mono}.
+     */
+    public OnboardingEditMono modifyOnboarding() {
+        return OnboardingEditMono.of(this);
     }
 
     @Override

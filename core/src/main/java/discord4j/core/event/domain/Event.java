@@ -20,9 +20,11 @@ package discord4j.core.event.domain;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.channel.*;
 import discord4j.core.event.domain.guild.*;
+import discord4j.core.event.domain.interaction.*;
 import discord4j.core.event.domain.lifecycle.*;
 import discord4j.core.event.domain.message.*;
-import discord4j.core.event.domain.interaction.*;
+import discord4j.core.event.domain.monetization.*;
+import discord4j.core.event.domain.poll.*;
 import discord4j.core.event.domain.role.RoleCreateEvent;
 import discord4j.core.event.domain.role.RoleDeleteEvent;
 import discord4j.core.event.domain.role.RoleUpdateEvent;
@@ -130,6 +132,13 @@ import discord4j.gateway.intent.Intent;
  *     <li>{@link VoiceServerUpdateEvent}: a guild's voice server was requested or has updated</li>
  * </ul>
  *
+ * <h2>Poll related events</h2>
+ *
+ * <ul>
+ *     <li>{@link PollVoteAddEvent}: a user added a vote to a poll</li>
+ *     <li>{@link PollVoteRemoveEvent}: a user removed a vote from a poll</li>
+ * </ul>
+ *
  * <h2>Connection lifecycle events</h2>
  * <p>
  * These events are derived by Discord4J according to the status of the websocket lifecycle.
@@ -141,6 +150,14 @@ import discord4j.gateway.intent.Intent;
  *     <li>{@link ReconnectStartEvent}: a resumption or reconnection attempt has begun</li>
  *     <li>{@link ReconnectFailEvent}: a resumption or reconnection attempt has failed but can be retried</li>
  *     <li>{@link SessionInvalidatedEvent}: a gateway session has been invalidated</li>
+ * </ul>
+ *
+ * <h2>Monetization related events</h2>
+ *
+ * <ul>
+ *     <li>{@link EntitlementCreateEvent}: a new entitlement was created</li>
+ *     <li>{@link EntitlementDeleteEvent}: an entitlement was deleted</li>
+ *     <li>{@link EntitlementUpdateEvent}: an entitlement was updated</li>
  * </ul>
  */
 public abstract class Event {

@@ -29,7 +29,7 @@ public abstract class Routes {
      * @see <a href="https://discord.com/developers/docs/reference#base-url">
      * https://discord.com/developers/docs/reference#base-url</a>
      */
-    public static final String BASE_URL = "https://discord.com/api/v9";
+    public static final String BASE_URL = "https://discord.com/api/v10";
 
     //////////////////////////////////////////////
     ////////////// Gateway Resource //////////////
@@ -414,6 +414,24 @@ public abstract class Routes {
 
     public static final Route LIST_JOINED_PRIVATE_ARCHIVED_THREADS = Route.get("/channels/{channel.id}/users/@me/threads/archived/private");
 
+    ///////////////////////////////////////////
+    ////////////////// Polls //////////////////
+    ///////////////////////////////////////////
+
+    /**
+     * Returns a list of users that voted for the given `answer_id` in the poll for the given message represented by
+     * its `message.id` and `channel.id`.
+     * @see <a href="https://discord.com/developers/docs/resources/poll#get-answer-voters">https://discord.com/developers/docs/resources/poll#get-answer-voters</a>
+     */
+    public static final Route POLL_ANSWER_VOTERS_GET = Route.get("/channels/{channel.id}/polls/{message.id}/answers/{answer_id}");
+
+    /**
+     * Request to end a poll early. This will end the poll and return the final results.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/poll#end-poll">https://discord.com/developers/docs/resources/poll#end-poll</a>
+     */
+    public static final Route END_POLL = Route.post("/channels/{channel.id}/polls/{message.id}/expire");
+
     ////////////////////////////////////////////
     ////////////// Sticker Resource //////////////
     ////////////////////////////////////////////
@@ -697,6 +715,16 @@ public abstract class Routes {
      * https://discord.com/developers/docs/resources/guild#remove-guild-ban</a>
      */
     public static final Route GUILD_BAN_REMOVE = Route.delete("/guilds/{guild.id}/bans/{user.id}");
+
+    /**
+     * Ban up to 200 users from a guild, and optionally delete previous messages sent by the banned users.
+     * Requires both the `BAN_MEMBERS` and `MANAGE_GUILD` permissions.
+     * Returns a 200 response on success, including the fields banned_users with the IDs of the banned users and failed_users with IDs that could not be banned or were already banned.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/guild#bulk-guild-ban">
+     * https://discord.com/developers/docs/resources/guild#bulk-guild-ban</a>
+     */
+    public static final Route GUILD_BAN_BULK = Route.post("/guilds/{guild.id}/bulk-ban");
 
     /**
      * Returns a list of role objects for the guild. Requires the 'MANAGE_ROLES' permission.
@@ -1031,6 +1059,22 @@ public abstract class Routes {
      */
     public static final Route USER_CONNECTIONS_GET = Route.get("/users/@me/connections");
 
+    /**
+     * Returns the application role connection for the user. Requires an OAuth2 access token with role_connections.write scope for the application specified in the path.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/user#get-current-user-application-role-connection">
+     * https://discord.com/developers/docs/resources/user#get-current-user-application-role-connection</a>
+     */
+    public static final Route USER_APPLICATIONS_ROLE_CONNECTION_GET = Route.get("/users/@me/applications/{application.id}/role-connection");
+
+    /**
+     * Updates and returns the application role connection for the user. Requires an OAuth2 access token with role_connections.write scope for the application specified in the path.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/user#update-current-user-application-role-connection">
+     * https://discord.com/developers/docs/resources/user#update-current-user-application-role-connection</a>
+     */
+    public static final Route USER_APPLICATIONS_ROLE_CONNECTION_MODIFY = Route.put("/users/@me/applications/{application.id}/role-connection");
+
     ////////////////////////////////////////////
     ////////////// Voice Resource //////////////
     ////////////////////////////////////////////
@@ -1208,6 +1252,69 @@ public abstract class Routes {
 
     public static final Route APPLICATION_COMMAND_PERMISSIONS_BULK_MODIFY = Route.put("/applications/{application.id}/guilds/{guild.id}/commands/permissions");
 
+    ///////////////////////////////////////////////////
+    // Application Emoji Resource //
+    ///////////////////////////////////////////////////
+
+    /**
+     * Returns an object containing a list of emoji objects for the given application under the items key.
+     * <br>
+     * Includes a user object for the team member that uploaded the emoji from the app's settings, or for the bot user if uploaded using the API.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/emoji#list-application-emojis">https://discord.com/developers/docs/resources/emoji#list-application-emojis</a>
+     */
+    public static final Route APPLICATION_EMOJIS_GET = Route.get("/applications/{application.id}/emojis");
+
+    /**
+     * Returns an emoji object for the given application and emoji IDs. Includes the user field.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/emoji#get-application-emoji">https://discord.com/developers/docs/resources/emoji#get-application-emoji</a>
+     */
+    public static final Route APPLICATION_EMOJI_GET = Route.get("/applications/{application.id}/emojis/{emoji.id}");
+
+    /**
+     * Create a new emoji for the application. Returns the new emoji object on success.
+     * <br>
+     * Emojis and animated emojis have a maximum file size of 256 KiB.
+     * Attempting to upload an emoji larger than this limit will fail and return 400 Bad Request and an error message, but not a JSON status code.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/emoji#create-application-emoji">https://discord.com/developers/docs/resources/emoji#create-application-emoji</a>
+     */
+    public static final Route APPLICATION_EMOJI_CREATE = Route.post("/applications/{application.id}/emojis");
+
+    /**
+     * Modify the given emoji. Returns the updated emoji object on success.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/emoji#modify-application-emoji">https://discord.com/developers/docs/resources/emoji#modify-application-emoji</a>
+     */
+    public static final Route APPLICATION_EMOJI_MODIFY = Route.patch("/applications/{application.id}/emojis/{emoji.id}");
+
+    /**
+     * Delete the given emoji. Returns 204 No Content on success.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/emoji#delete-application-emoji">https://discord.com/developers/docs/resources/emoji#delete-application-emoji</a>
+     */
+    public static final Route APPLICATION_EMOJI_DELETE = Route.delete("/applications/{application.id}/emojis/{emoji.id}");
+
+    ///////////////////////////////////////////////////
+    // Application Role Connection Metadata Resource //
+    ///////////////////////////////////////////////////
+
+    /**
+     * Returns a list of application role connection metadata objects for the given application.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/application-role-connection-metadata#get-application-role-connection-metadata-records">https://discord.com/developers/docs/resources/application-role-connection-metadata#get-application-role-connection-metadata-records</a>
+     */
+    public static final Route APPLICATION_ROLE_CONNECTION_METADATA_GET = Route.get("/applications/{application.id}/role-connections/metadata");
+
+    /**
+     * Updates and returns a list of application role connection metadata objects for the given application.
+     * An application can have a maximum of 5 metadata records.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/application-role-connection-metadata#modify-application-role-connection-metadata">https://discord.com/developers/docs/resources/application-role-connection-metadata#modify-application-role-connection-metadata</a>
+     */
+    public static final Route APPLICATION_ROLE_CONNECTION_METADATA_MODIFY = Route.put("/applications/{application.id}/role-connections/metadata");
+
     ///////////////////////////////////////////
     ////////// Interaction Resource ///////////
     ///////////////////////////////////////////
@@ -1280,6 +1387,25 @@ public abstract class Routes {
     public static final Route GUILD_SCHEDULED_EVENT_USERS_GET = Route.get("/guilds/{guild.id}/scheduled-events/{event.id}/users");
 
     ///////////////////////////////////////////
+    ////// Onboarding and welcome screen //////
+    ///////////////////////////////////////////
+
+    /**
+     * Returns the Onboarding object for the guild.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/guild#get-guild-onboarding">https://discord.com/developers/docs/resources/guild#get-guild-onboarding</a>
+     */
+    public static final Route GUILD_ONBOARDING_GET = Route.get("/guilds/{guild.id}/onboarding");
+
+    /**
+     * Modifies the onboarding configuration of the guild. Returns a 200 with the Onboarding object for the guild. Requires the MANAGE_GUILD and MANAGE_ROLES permissions.
+     * This endpoint supports the X-Audit-Log-Reason header.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/guild#modify-guild-onboarding">https://discord.com/developers/docs/resources/guild#modify-guild-onboarding</a>
+     */
+    public static final Route GUILD_ONBOARDING_MODIFY = Route.put("/guilds/{guild.id}/onboarding");
+
+    ///////////////////////////////////////////
     ///////////// OAuth2 Resource /////////////
     ///////////////////////////////////////////
 
@@ -1288,4 +1414,45 @@ public abstract class Routes {
     public static final Route TOKEN_REVOKE = Route.post("/oauth2/token/revoke");
 
     public static final Route AUTHORIZATION_INFO_GET = Route.get("/oauth2/@me");
+
+
+    ////////////////////////////////////////
+    ///////////// Monetization /////////////
+    ////////////////////////////////////////
+
+    /**
+     * Returns a list of SKUs for a given application.
+     *
+     * @see <a href="https://discord.com/developers/docs/monetization/skus#list-skus">Docs</a>
+     */
+    public static final Route LIST_SKUS = Route.get("/applications/{application.id}/skus");
+
+    /**
+     * Returns a list of entitlements for a given application.
+     *
+     * @see <a href="https://discord.com/developers/docs/monetization/entitlements#list-entitlements">Docs</a>
+     */
+    public static final Route LIST_ENTITLEMENTS = Route.get("/applications/{application.id}/entitlements");
+
+    /**
+     * Creates a test entitlement for a given application.
+     *
+     * @see <a href="https://discord.com/developers/docs/monetization/entitlements#create-test-entitlement">Docs</a>
+     */
+    public static final Route CREATE_TEST_ENTITLEMENT = Route.post("/applications/{application.id}/entitlements");
+
+    /**
+     * Deletes a test entitlement for a given application.
+     *
+     * @see <a href="https://discord.com/developers/docs/monetization/entitlements#delete-test-entitlement">Docs</a>
+     */
+    public static final Route DELETE_TEST_ENTITLEMENT = Route.delete("/applications/{application.id}/entitlements/{entitlement.id}");
+
+    /**
+     * For One-Time Purchase consumable SKUs, marks a given entitlement for the user as consumed. The entitlement will have consumed=true when using {@link Routes#LIST_ENTITLEMENTS}.
+     *
+     * @see <a href="https://discord.com/developers/docs/monetization/entitlements#consume-an-entitlement">Docs</a>
+     */
+    public static final Route CONSUME_ENTITLEMENT = Route.post("/applications/{application.id}/entitlements/{entitlement.id}/consume");
+
 }
