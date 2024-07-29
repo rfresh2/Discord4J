@@ -37,7 +37,7 @@ public class JacksonPayloadWriter implements PayloadWriter {
         return Mono.create(sink -> sink.onRequest(__ -> {
             try {
                 sink.success(Unpooled.wrappedBuffer(mapper.writeValueAsBytes(payload)));
-            } catch (JsonProcessingException e) {
+            } catch (Throwable e) {
                 sink.error(Exceptions.propagate(e));
             }
         }));

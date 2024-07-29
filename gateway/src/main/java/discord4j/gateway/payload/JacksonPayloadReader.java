@@ -58,7 +58,7 @@ public class JacksonPayloadReader implements PayloadReader {
                 sink.success(value);
             } catch (IllegalArgumentException e) {
                 sink.success();
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 if (lenient) {
                     // if eof input - just ignore
                     if (buf.readableBytes() > 0) {
