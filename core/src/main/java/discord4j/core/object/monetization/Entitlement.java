@@ -156,7 +156,7 @@ public class Entitlement implements Entity {
      * @return An {@link Optional} containing the end time of the entitlement.
      */
     public Optional<Instant> getEndsAt() {
-        return data.endsAt().toOptional().map(Instant::parse);
+        return data.endsAt().toOptional().flatMap(o -> o.map(Instant::parse));
     }
 
     /**
