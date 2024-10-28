@@ -23,7 +23,7 @@ ext {
     }
 
     // Dependencies
-    reactor_bom_version = '2023.0.10'
+    reactor_bom_version = '2023.0.11'
     jackson_databind_version = '2.18.0'
     jackson_datatype_jsr310_version = '2.18.0'
     jackson_datatype_jdk8_version = '2.18.0'
@@ -32,9 +32,9 @@ ext {
     immutables_version = '2.10.1'
 
     // Test dependencies
-    junit_version = '5.11.1'
-    mockito_version = '5.14.0'
-    logback_version = '1.5.8'
+    junit_version = '5.11.3'
+    mockito_version = '5.14.2'
+    logback_version = '1.5.12'
     reflections_version = '0.10.2'
     lavaplayer_version = '1.4.3'
 
