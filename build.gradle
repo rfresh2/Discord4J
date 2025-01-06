@@ -4,7 +4,7 @@ plugins {
     id 'signing'
     id 'com.gorylenko.gradle-git-properties' version '2.4.2' apply false
     id 'com.github.ben-manes.versions' version '0.51.0'
-    id 'net.researchgate.release' version '3.0.2'
+    id 'net.researchgate.release' version '3.1.0'
 }
 
 ext {
@@ -23,7 +23,7 @@ ext {
     }
 
     // Dependencies
-    reactor_bom_version = '2024.0.0'
+    reactor_bom_version = '2024.0.1'
     jackson_databind_version = '2.18.2'
     jackson_datatype_jsr310_version = '2.18.2'
     jackson_datatype_jdk8_version = '2.18.2'
@@ -32,9 +32,9 @@ ext {
     immutables_version = '2.10.1'
 
     // Test dependencies
-    junit_version = '5.11.3'
-    mockito_version = '5.14.2'
-    logback_version = '1.5.12'
+    junit_version = '5.11.4'
+    mockito_version = '5.15.2'
+    logback_version = '1.5.16'
     reflections_version = '0.10.2'
     lavaplayer_version = '1.4.3'
 
