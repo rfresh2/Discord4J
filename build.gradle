@@ -23,11 +23,11 @@ ext {
     }
 
     // Dependencies
-    reactor_bom_version = '2024.0.1'
+    reactor_bom_version = '2024.0.2'
     jackson_databind_version = '2.18.2'
     jackson_datatype_jsr310_version = '2.18.2'
     jackson_datatype_jdk8_version = '2.18.2'
-    caffeine_version = '3.1.8'
+    caffeine_version = '3.2.0'
     immutables_group = 'org.immutables'
     immutables_version = '2.10.1'
 
