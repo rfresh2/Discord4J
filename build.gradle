@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'com.gorylenko.gradle-git-properties' version '2.4.2' apply false
-    id 'com.github.ben-manes.versions' version '0.51.0'
+    id 'com.github.ben-manes.versions' version '0.52.0'
     id 'net.researchgate.release' version '3.1.0'
 }
 
@@ -23,11 +23,11 @@ ext {
     }
 
     // Dependencies
-    reactor_bom_version = '2024.0.1'
+    reactor_bom_version = '2024.0.2'
     jackson_databind_version = '2.18.2'
     jackson_datatype_jsr310_version = '2.18.2'
     jackson_datatype_jdk8_version = '2.18.2'
-    caffeine_version = '3.1.8'
+    caffeine_version = '3.2.0'
     immutables_group = 'org.immutables'
     immutables_version = '2.10.1'
 
