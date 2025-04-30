@@ -2,9 +2,6 @@ dependencies {
     api project(':common')
 
     api "io.projectreactor.addons:reactor-extra"
-
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_version"
-    testImplementation "ch.qos.logback:logback-classic:$logback_version"
 }
 
 javadoc {

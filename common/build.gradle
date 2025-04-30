@@ -8,13 +8,10 @@ dependencies {
     api "com.github.ben-manes.caffeine:caffeine:$caffeine_version"
 
     api "com.discord4j:stores-api:$storesVersion"
-
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_version"
-    testImplementation "io.projectreactor:reactor-test"
-    testImplementation "ch.qos.logback:logback-classic:$logback_version"
 }
 
 gitProperties {
+    dotGitDirectory = file("$rootDir/.git")
     gitPropertiesDir = file("$project.buildDir/resources/main/discord4j/common")
     customProperty 'git.commit.id.describe', "$version"
     customProperty 'application.name', project_name

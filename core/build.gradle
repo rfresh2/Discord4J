@@ -12,10 +12,6 @@ dependencies {
     compileOnly "com.github.rfresh2.discord4j:discord-json-encoding:$discordJsonVersion"
     compileOnly "org.reflections:reflections:0.10.2"
 
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_version"
-    testImplementation "org.mockito:mockito-core:$mockito_version"
-    testImplementation "ch.qos.logback:logback-classic:$logback_version"
-    testImplementation "io.projectreactor:reactor-test"
     testImplementation "org.reflections:reflections:$reflections_version"
     testImplementation "com.github.walkyst:lavaplayer-fork:$lavaplayer_version"
 }
