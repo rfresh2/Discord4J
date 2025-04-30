@@ -17,9 +17,11 @@
 package discord4j.core.object.component;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.reaction.ReactionEmoji;
+import discord4j.core.object.emoji.Emoji;
+import discord4j.discordjson.Id;
 import discord4j.discordjson.json.ComponentData;
 import discord4j.discordjson.json.ImmutableComponentData;
+import discord4j.discordjson.possible.Possible;
 import reactor.util.annotation.Nullable;
 
 import java.util.Optional;
@@ -27,9 +29,9 @@ import java.util.Optional;
 /**
  * A message button.
  *
- * @see <a href="https://discord.com/developers/docs/interactions/message-components#buttons">Buttons</a>
+ * @see <a href="https://discord.com/developers/docs/components/reference#button">Buttons</a>
  */
-public class Button extends ActionComponent {
+public class Button extends ActionComponent implements IAccessoryComponent {
 
     /**
      * Creates a {@link Button.Style#PRIMARY primary} button.
@@ -49,7 +51,7 @@ public class Button extends ActionComponent {
      * @param emoji The emoji that appears on the button.
      * @return A button with the given data.
      */
-    public static Button primary(String customId, ReactionEmoji emoji) {
+    public static Button primary(String customId, Emoji emoji) {
         return of(Button.Style.PRIMARY, customId, emoji, null, null, null);
     }
 
@@ -61,7 +63,7 @@ public class Button extends ActionComponent {
      * @param label The text that appears on the button.
      * @return A button with the given data.
      */
-    public static Button primary(String customId, ReactionEmoji emoji, String label) {
+    public static Button primary(String customId, Emoji emoji, String label) {
         return of(Button.Style.PRIMARY, customId, emoji, label, null, null);
     }
 
@@ -83,7 +85,7 @@ public class Button extends ActionComponent {
      * @param emoji The emoji that appears on the button.
      * @return A button with the given data.
      */
-    public static Button secondary(String customId, ReactionEmoji emoji) {
+    public static Button secondary(String customId, Emoji emoji) {
         return of(Button.Style.SECONDARY, customId, emoji, null, null, null);
     }
 
@@ -95,7 +97,7 @@ public class Button extends ActionComponent {
      * @param label The text that appears on the button.
      * @return A button with the given data.
      */
-    public static Button secondary(String customId, ReactionEmoji emoji, String label) {
+    public static Button secondary(String customId, Emoji emoji, String label) {
         return of(Button.Style.SECONDARY, customId, emoji, label, null, null);
     }
 
@@ -117,7 +119,7 @@ public class Button extends ActionComponent {
      * @param emoji The emoji that appears on the button.
      * @return A button with the given data.
      */
-    public static Button success(String customId, ReactionEmoji emoji) {
+    public static Button success(String customId, Emoji emoji) {
         return of(Button.Style.SUCCESS, customId, emoji, null, null, null);
     }
 
@@ -129,7 +131,7 @@ public class Button extends ActionComponent {
      * @param label The text that appears on the button.
      * @return A button with the given data.
      */
-    public static Button success(String customId, ReactionEmoji emoji, String label) {
+    public static Button success(String customId, Emoji emoji, String label) {
         return of(Button.Style.SUCCESS, customId, emoji, label, null, null);
     }
 
@@ -151,7 +153,7 @@ public class Button extends ActionComponent {
      * @param emoji The emoji that appears on the button.
      * @return A button with the given data.
      */
-    public static Button danger(String customId, ReactionEmoji emoji) {
+    public static Button danger(String customId, Emoji emoji) {
         return of(Button.Style.DANGER, customId, emoji, null, null, null);
     }
 
@@ -163,7 +165,7 @@ public class Button extends ActionComponent {
      * @param label The text that appears on the button.
      * @return A button with the given data.
      */
-    public static Button danger(String customId, ReactionEmoji emoji, String label) {
+    public static Button danger(String customId, Emoji emoji, String label) {
         return of(Button.Style.DANGER, customId, emoji, label, null, null);
     }
 
@@ -185,7 +187,7 @@ public class Button extends ActionComponent {
      * @param emoji The emoji that appears on the button.
      * @return A button with the given data.
      */
-    public static Button link(String url, ReactionEmoji emoji) {
+    public static Button link(String url, Emoji emoji) {
         return of(Button.Style.LINK, null, emoji, null, url, null);
     }
 
@@ -197,36 +199,287 @@ public class Button extends ActionComponent {
      * @param label The text that appears on the button.
      * @return A button with the given data.
      */
-    public static Button link(String url, ReactionEmoji emoji, String label) {
+    public static Button link(String url, Emoji emoji, String label) {
         return of(Button.Style.LINK, null, emoji, label, url, null);
     }
 
+    /**
+     * Creates a {@link Button.Style#PREMIUM premium} button.
+     *
+     * @param skuId the associated sku id
+     * @return A button with the given data.
+     */
     public static Button premium(Snowflake skuId) {
-        return of (Button.Style.PREMIUM, null, null, null, null, skuId.asString());
+        return of(Button.Style.PREMIUM, null, null, null, null, skuId.asString());
     }
 
-    private static Button of(Style style, @Nullable String customId, @Nullable ReactionEmoji emoji,
+    private static Button of(Style style, @Nullable String customId, @Nullable Emoji emoji,
                              @Nullable String label, @Nullable String url, @Nullable String skuId) {
         ImmutableComponentData.Builder builder = ComponentData.builder()
-                .type(MessageComponent.Type.BUTTON.getValue())
-                .style(style.getValue());
+            .type(MessageComponent.Type.BUTTON.getValue())
+            .style(style.getValue());
 
-        if (customId != null)
+        if (customId != null) {
             builder.customId(customId);
+        }
 
-        if (emoji != null)
+        if (emoji != null) {
             builder.emoji(emoji.asEmojiData());
+        }
 
-        if (label != null)
+        if (label != null) {
             builder.label(label);
+        }
 
-        if (url != null)
+        if (url != null) {
             builder.url(url);
+        }
 
-        if (skuId != null)
+        if (skuId != null) {
             builder.skuId(skuId);
+        }
 
         return new Button(builder.build());
+    }
+
+    /**
+     * Creates a {@link Button.Style#PRIMARY primary} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button primary(int id, String customId, String label) {
+        return of(id, Button.Style.PRIMARY, customId, null, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#PRIMARY primary} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button primary(int id, String customId, Emoji emoji) {
+        return of(id, Button.Style.PRIMARY, customId, emoji, null, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#PRIMARY primary} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button primary(int id, String customId, Emoji emoji, String label) {
+        return of(id, Button.Style.PRIMARY, customId, emoji, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#SECONDARY secondary} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button secondary(int id, String customId, String label) {
+        return of(id, Button.Style.SECONDARY, customId, null, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#SECONDARY secondary} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button secondary(int id, String customId, Emoji emoji) {
+        return of(id, Button.Style.SECONDARY, customId, emoji, null, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#SECONDARY secondary} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button secondary(int id, String customId, Emoji emoji, String label) {
+        return of(id, Button.Style.SECONDARY, customId, emoji, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#SUCCESS success} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button success(int id, String customId, String label) {
+        return of(id, Button.Style.SUCCESS, customId, null, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#SUCCESS success} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button success(int id, String customId, Emoji emoji) {
+        return of(id, Button.Style.SUCCESS, customId, emoji, null, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#SUCCESS success} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button success(int id, String customId, Emoji emoji, String label) {
+        return of(id, Button.Style.SUCCESS, customId, emoji, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#DANGER danger} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button danger(int id, String customId, String label) {
+        return of(id, Button.Style.DANGER, customId, null, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#DANGER danger} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button danger(int id, String customId, Emoji emoji) {
+        return of(id, Button.Style.DANGER, customId, emoji, null, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#DANGER danger} button.
+     *
+     * @param id the component id
+     * @param customId A developer-defined identifier for the button.
+     * @param emoji The emoji that appears on the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button danger(int id, String customId, Emoji emoji, String label) {
+        return of(id, Button.Style.DANGER, customId, emoji, label, null, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#LINK link} button.
+     *
+     * @param id the component id
+     * @param url The url to navigate to when clicked.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button link(int id, String url, String label) {
+        return of(id, Button.Style.LINK, null, null, label, url, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#LINK link} button.
+     *
+     * @param id the component id
+     * @param url The url to navigate to when clicked.
+     * @param emoji The emoji that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button link(int id, String url, Emoji emoji) {
+        return of(id, Button.Style.LINK, null, emoji, null, url, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#LINK link} button.
+     *
+     * @param id the component id
+     * @param url The url to navigate to when clicked.
+     * @param emoji The emoji that appears on the button.
+     * @param label The text that appears on the button.
+     * @return A button with the given data.
+     */
+    public static Button link(int id, String url, Emoji emoji, String label) {
+        return of(id, Button.Style.LINK, null, emoji, label, url, null);
+    }
+
+    /**
+     * Creates a {@link Button.Style#PREMIUM premium} button.
+     *
+     * @param id the component id
+     * @param skuId the associated sku id
+     * @return A button with the given data.
+     */
+    public static Button premium(int id, Snowflake skuId) {
+        return of(id, Button.Style.PREMIUM, null, null, null, null, skuId.asString());
+    }
+
+    private static Button of(int id, Style style, @Nullable String customId, @Nullable Emoji emoji,
+                             @Nullable String label, @Nullable String url, @Nullable String skuId) {
+        ImmutableComponentData.Builder builder = ComponentData.builder()
+            .type(MessageComponent.Type.BUTTON.getValue())
+            .id(id)
+            .style(style.getValue());
+
+        if (customId != null) {
+            builder.customId(customId);
+        }
+
+        if (emoji != null) {
+            builder.emoji(emoji.asEmojiData());
+        }
+
+        if (label != null) {
+            builder.label(label);
+        }
+
+        if (url != null) {
+            builder.url(url);
+        }
+
+        if (skuId != null) {
+            builder.skuId(skuId);
+        }
+
+        return new Button(builder.build());
+    }
+
+    protected Button(Integer id, Style style, @Nullable String customId, @Nullable Emoji emoji,
+                     @Nullable String label, @Nullable String url, @Nullable String skuId) {
+        super(MessageComponent.getBuilder(Type.BUTTON)
+            .id(Possible.ofNullable(id))
+            .style(style.getValue())
+            .customId(Possible.ofNullable(customId))
+            .emoji(Possible.ofNullable(emoji).map(Emoji::asEmojiData))
+            .label(Possible.ofNullable(label))
+            .url(Possible.ofNullable(url))
+            .skuId(Possible.ofNullable(skuId).map(Id::of))
+            .build()
+        );
     }
 
     Button(ComponentData data) {
@@ -240,8 +493,8 @@ public class Button extends ActionComponent {
      */
     public Style getStyle() {
         return getData().style().toOptional()
-                .map(Style::of)
-                .orElseThrow(IllegalStateException::new); // style should always be present on buttons
+            .map(Style::of)
+            .orElseThrow(IllegalStateException::new); // style should always be present on buttons
     }
 
     /**
@@ -258,18 +511,9 @@ public class Button extends ActionComponent {
      *
      * @return The button's emoji.
      */
-    public Optional<ReactionEmoji> getEmoji() {
+    public Optional<Emoji> getEmoji() {
         return getData().emoji().toOptional()
-                .map(ReactionEmoji::of);
-    }
-
-    /**
-     * Gets the button's custom id.
-     *
-     * @return The button's custom id.
-     */
-    public Optional<String> getCustomId() {
-        return getData().customId().toOptional();
+            .map(Emoji::of);
     }
 
     /**
@@ -344,13 +588,20 @@ public class Button extends ActionComponent {
 
         public static Style of(int value) {
             switch (value) {
-                case 1: return PRIMARY;
-                case 2: return SECONDARY;
-                case 3: return SUCCESS;
-                case 4: return DANGER;
-                case 5: return LINK;
-                case 6: return PREMIUM;
-                default: return UNKNOWN;
+                case 1:
+                    return PRIMARY;
+                case 2:
+                    return SECONDARY;
+                case 3:
+                    return SUCCESS;
+                case 4:
+                    return DANGER;
+                case 5:
+                    return LINK;
+                case 6:
+                    return PREMIUM;
+                default:
+                    return UNKNOWN;
             }
         }
     }
